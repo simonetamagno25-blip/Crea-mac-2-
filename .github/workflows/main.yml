@@ -1,0 +1,33 @@
+name: Compila per Mac
+
+on:
+  push:
+    branches: [ main, master ] # Si attiva ogni volta che fai un push su main o master
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+
+    steps:
+    - name: Scarica il codice della repository
+      uses: actions/checkout@v4
+
+    - name: Configura Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Installa PyInstaller
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+
+    - name: Genera l'eseguibile Mac
+      run: |
+        pyinstaller --onefile --name="AvviaServerMac" backend/server.py
+
+    - name: Salva l'eseguibile negli Artifacts di GitHub
+      uses: actions/upload-artifact@v4
+      with:
+        name: Applicazione-Mac
+        path: dist/AvviaServerMac
