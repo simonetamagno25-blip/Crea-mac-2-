@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Onoranze Funebri • Rete Prosdocimo</title>
+    <style>
+        :root {
+            --bg: #f0f2f2;
+            --surface: #ffffff;
+            --border: #dde3e3;
+            --text: #1e2b2b;
+            --text-secondary: #5f6b6b;
+            --accent: #3d5a5a;
+            --accent-hover: #2f4747;
+            --danger: #b84545;
+            --danger-hover: #993636;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.10);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.18);
+            --radius: 10px;
+            --radius-sm: 7px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            background: var(--surface);
+            max-width: 750px;
+            width: 100%;
+            border-radius: 14px;
+            box-shadow: var(--shadow-md);
+            padding: 2.2rem 2.4rem 2.2rem;
+            position: relative;
+        }
+
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h1 { font-size: 1.55rem; font-weight: 500; letter-spacing: 0.6px; color: var(--text); margin-bottom: 0.25rem; }
+        .header .subtitle { font-size: 0.85rem; color: var(--text-secondary); font-style: italic; letter-spacing: 0.2px; }
+        .header::after { content: ''; display: block; width: 60px; height: 2px; background: #cdd6d6; margin: 0.9rem auto 0; border-radius: 1px; }
+
+        .select-row {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+            margin-bottom: 1rem; padding: 0.85rem 1rem;
+            background: #f9fafa; border-radius: var(--radius); border: 1px solid var(--border);
+        }
+        .select-row label { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); min-width: 80px; }
+        .select-row select, .select-row input {
+            flex: 2 1 140px; padding: 0.6rem 0.8rem; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 0.9rem; background: white; transition: border var(--transition); min-width: 0;
+        }
+        .select-row select { appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%235f6b6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 0.85rem; cursor: pointer; }
+        .select-row select:focus, .select-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(61, 90, 90, 0.08); }
+        .btn-group { display: flex; gap: 0.3rem; flex-shrink: 0; }
+
+        button {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;
+            padding: 0.5rem 0.75rem; border: 1px solid transparent; border-radius: var(--radius-sm);
+            font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all var(--transition);
+            white-space: nowrap; background: #ecf0f0; color: var(--text); letter-spacing: 0.2px; min-height: 34px;
+        }
+        button:hover { background: #dce4e4; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+        button.primary:hover:not(:disabled) { background: var(--accent-hover); }
+        button.danger { background: #fff; color: var(--danger); border-color: #e6cccc; }
+        button.danger:hover:not(:disabled) { background: #fdf2f2; border-color: var(--danger); }
+        button.icon-only { padding: 0.4rem 0.5rem; min-width: 32px; min-height: 32px; font-size: 0.9rem; }
+        
+        /* Stile per i pulsanti di copia */
+        .btn-copia {
+            background: #f0f2f2;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.15rem 0.4rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 0.4rem;
+            transition: all var(--transition);
+            min-height: auto;
+        }
+        .btn-copia:hover {
+            background: #e2eaea;
+            color: var(--text);
+            border-color: #cdd6d6;
+        }
+
+        .filter-row { display: flex; align-items: center; gap: 0.3rem; margin-left: 0.5rem; flex: 1 1 auto; min-width: 150px; }
+        .filter-row input { flex: 1; padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8rem; }
+        .filter-row button { padding: 0.3rem 0.6rem; font-size: 0.75rem; min-height: 28px; }
+
+        .search-bar { display: flex; gap: 0.4rem; margin-bottom: 1rem; align-items: center; }
+        .search-bar input { flex: 1; padding: 0.6rem 0.9rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; background: white; transition: border var(--transition); min-width: 0; }
+        .search-bar input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(61, 90, 90, 0.06); }
+
+        .results-box {
+            background: #fafbfb; border-radius: var(--radius); padding: 0.8rem 1.2rem;
+            border: 1px solid var(--border); min-height: 90px; max-height: 400px; overflow-y: auto;
+            font-size: 0.9rem; line-height: 1.6;
+        }
+        .onoranza-card {
+            display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
+            padding: 0.65rem 0; border-bottom: 1px solid #e8eded; gap: 0.5rem;
+        }
+        .onoranza-card:last-child { border-bottom: none; }
+        .onoranza-info { flex: 1 1 60%; min-width: 180px; }
+        .onoranza-name { font-weight: 600; font-size: 0.95rem; color: #1a2a2a; }
+        .onoranza-details { font-size: 0.8rem; color: #5a6a6a; margin-top: 0.15rem; display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; }
+        .onoranza-details span { display: inline-flex; align-items: center; gap: 0.2rem; }
+        .onoranza-details a { color: #2e5555; text-decoration: none; font-weight: 500; }
+        .onoranza-details a:hover { text-decoration: underline; color: #1c3636; }
+        .card-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
+        .card-actions button { padding: 0.3rem 0.45rem; font-size: 0.7rem; min-height: 28px; border-radius: 5px; }
+        .locality-badge { font-size: 0.7rem; background: #e2eaea; color: #2e4a4a; border-radius: 20px; padding: 0.15rem 0.7rem; font-weight: 500; margin-left: 0.3rem; }
+        .empty-message { color: #9aa5a5; font-style: italic; text-align: center; padding: 1.5rem 0; font-size: 0.9rem; }
+
+        .actions-bar { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; align-items: center; }
+        .actions-bar .spacer { flex: 1; }
+
+        footer { margin-top: 1.8rem; font-size: 0.7rem; text-align: center; color: #b5bdbd; letter-spacing: 0.3px; }
+
+        /* MODALE */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(20, 30, 30, 0.55); display: flex;
+            align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.18s ease; padding: 1rem;
+        }
+        .modal-overlay.hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal {
+            background: #fff; border-radius: 12px; padding: 1.8rem 2rem 2rem; width: 100%;
+            max-width: 460px; box-shadow: var(--shadow-lg); animation: slideUp 0.22s ease; position: relative;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal h3 { font-size: 1.1rem; font-weight: 500; margin-bottom: 1.2rem; color: var(--text); letter-spacing: 0.3px; }
+        .modal .form-row { margin-bottom: 0.9rem; }
+        .modal .form-row label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .modal .form-row input, .modal .form-row select { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; transition: border var(--transition); background: white; }
+        .modal .form-row input:focus, .modal .form-row select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(61, 90, 90, 0.07); }
+        .modal .btn-row { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.4rem; flex-wrap: wrap; }
+        .modal .btn-row button { padding: 0.6rem 1.2rem; font-size: 0.85rem; }
+        .modal .close-icon { position: absolute; top: 0.8rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #999; padding: 0.3rem; border-radius: 4px; min-height: auto; }
+        .modal .close-icon:hover { color: #444; background: #f0f0f0; }
+        .modal .warning-text { color: #8a5555; font-size: 0.85rem; margin-bottom: 0.5rem; line-height: 1.4; }
+        .modal .highlight-name { font-weight: 600; color: #1a2a2a; }
+
+        .results-box::-webkit-scrollbar { width: 5px; }
+        .results-box::-webkit-scrollbar-thumb { background: #ccd4d4; border-radius: 10px; }
+
+        @media (max-width: 500px) {
+            .container { padding: 1.4rem; }
+            .modal { padding: 1.2rem 1.3rem 1.5rem; }
+            .select-row { padding: 0.6rem 0.7rem; gap: 0.3rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>ONORANZE FUNEBRI</h1>
+        <div class="subtitle">Collaboratori convenzionati · Rete Prosdocimo</div>
+    </div>
+
+    <div class="select-row">
+        <label>Regione</label>
+        <select id="regionSelect"></select>
+        <div class="btn-group">
+            <button id="addRegionBtn" class="icon-only" title="Aggiungi regione">➕</button>
+            <button id="editRegionBtn" class="icon-only" title="Modifica regione">✏️</button>
+            <button id="deleteRegionBtn" class="icon-only danger" title="Elimina regione">🗑️</button>
+        </div>
+    </div>
+
+    <div class="select-row">
+        <label>Provincia</label>
+        <select id="provinceSelect" disabled></select>
+        <div class="btn-group">
+            <button id="addProvinceBtn" class="icon-only" title="Aggiungi provincia" disabled>➕</button>
+            <button id="editProvinceBtn" class="icon-only" title="Modifica provincia" disabled>✏️</button>
+            <button id="deleteProvinceBtn" class="icon-only danger" title="Elimina provincia" disabled>🗑️</button>
+        </div>
+    </div>
+
+    <div class="select-row">
+        <label>Località</label>
+        <select id="localitySelect" disabled></select>
+        <div class="filter-row">
+            <input type="text" id="localityTypeFilter" placeholder="Filtra tipo..." disabled>
+            <button id="clearFilterBtn" disabled>✖</button>
+        </div>
+        <div class="btn-group">
+            <button id="addLocalityBtn" class="icon-only" title="Aggiungi località" disabled>➕</button>
+            <button id="editLocalityBtn" class="icon-only" title="Modifica località" disabled>✏️</button>
+            <button id="deleteLocalityBtn" class="icon-only danger" title="Elimina località" disabled>🗑️</button>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <input type="search" id="searchInput" placeholder="🔍 Cerca onoranza per nome..." disabled>
+        <button id="clearSearchBtn" disabled>✖ Pulisci</button>
+    </div>
+
+    <div id="resultsBox" class="results-box">
+        <div class="empty-message">Seleziona una località per visualizzare le onoranze.</div>
+    </div>
+
+    <div class="actions-bar">
+        <button id="showAddOnoranzaBtn" class="primary" disabled>➕ Nuova onoranza</button>
+        <span class="spacer"></span>
+        </div>
+
+    <footer>Progetto personale · Database SQL attivo · Trasportabile su USB con file DB</footer>
+</div>
+
+<div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal" id="modalContent">
+        <button class="close-icon" id="modalCloseBtn">✕</button>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const defaultData = {
+            "Abruzzo": { "Chieti": {}, "L'Aquila": {}, "Pescara": {}, "Teramo": {} },
+            "Basilicata": { "Matera": {}, "Potenza": {} },
+            "Calabria": { "Catanzaro": {}, "Cosenza": {}, "Crotone": {}, "Reggio Calabria": {}, "Vibo Valentia": {} },
+            "Campania": { "Avellino": {}, "Benevento": {}, "Caserta": {}, "Napoli": {}, "Salerno": {} },
+            "Emilia-Romagna": { "Bologna": {}, "Ferrara": {}, "Forlì-Cesena": {}, "Modena": {}, "Parma": {}, "Piacenza": {}, "Ravenna": {}, "Reggio Emilia": {}, "Rimini": {} },
+            "Friuli-Venezia Giulia": { "Gorizia": {}, "Pordenone": {}, "Trieste": {}, "Udine": {} },
+            "Lazio": { "Frosinone": {}, "Latina": {}, "Rieti": {}, "Roma": {}, "Viterbo": {} },
+            "Liguria": { "Genova": {}, "Imperia": {}, "La Spezia": {}, "Savona": {} },
+            "Lombardia": { "Bergamo": {}, "Brescia": {}, "Como": {}, "Cremona": {}, "Lecco": {}, "Lodi": {}, "Mantova": {}, "Milano": {}, "Monza e della Brianza": {}, "Pavia": {}, "Sondrio": {}, "Varese": {} },
+            "Marche": { "Ancona": {}, "Ascoli Piceno": {}, "Fermo": {}, "Macerata": {}, "Pesaro e Urbino": {} },
+            "Molise": { "Campobasso": {}, "Isernia": {} },
+            "Piemonte": { "Alessandria": {}, "Asti": {}, "Biella": {}, "Cuneo": {}, "Novara": {}, "Torino": {}, "Verbano-Cusio-Ossola": {}, "Vercelli": {} },
+            "Puglia": { "Bari": {}, "Barletta-Andria-Trani": {}, "Brindisi": {}, "Foggia": {}, "Lecce": {}, "Taranto": {} },
+            "Sardegna": { "Cagliari": {}, "Nuoro": {}, "Oristano": {}, "Sassari": {}, "Sud Sardegna": {} },
+            "Sicilia": { "Agrigento": {}, "Caltanissetta": {}, "Enna": {}, "Palermo": {}, "Ragusa": {}, "Siracusa": {}, "Trapani": {}, "Messina": {}, "Catania": {} },
+            "Toscana": { "Arezzo": {}, "Firenze": {}, "Grosseto": {}, "Livorno": {}, "Lucca": {}, "Massa-Carrara": {}, "Pisa": {}, "Pistoia": {}, "Prato": {}, "Siena": {} },
+            "Trentino-Alto Adige": { "Bolzano": {}, "Trento": {} },
+            "Umbria": { "Perugia": {}, "Terni": {} },
+            "Valle d'Aosta": { "Aosta": {} },
+            "Veneto": { "Belluno": {}, "Padova": {}, "Rovigo": {}, "Venezia": {}, "Verona": {}, "Vicenza": {}, "Treviso": {} }
+        };
+
+        let currentData = {}; 
+
+        // CARICAMENTO DAL SERVER SQL
+        function loadData(callback) {
+            fetch('/api/data')
+                .then(res => res.json())
+                .then(data => {
+                    if (Object.keys(data).length === 0) {
+                        currentData = JSON.parse(JSON.stringify(defaultData));
+                    } else {
+                        currentData = data;
+                    }
+                    if(callback) callback();
+                })
+                .catch(err => {
+                    console.error("Errore backend, carico default:", err);
+                    currentData = JSON.parse(JSON.stringify(defaultData));
+                    if(callback) callback();
+                });
+        }
+
+        // SALVATAGGIO AUTOMATICO SUL SERVER SQL
+        function saveData() {
+            fetch('/api/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentData)
+            })
+            .then(res => res.json())
+            .then(res => console.log("Autosalvato su SQL:", res))
+            .catch(e => console.error("Errore di salvataggio su SQL:", e));
+        }
+
+        // ==================== RIFERIMENTI DOM ====================
+        const regionSelect = document.getElementById('regionSelect');
+        const provinceSelect = document.getElementById('provinceSelect');
+        const localitySelect = document.getElementById('localitySelect');
+        const localityTypeFilter = document.getElementById('localityTypeFilter');
+        const clearFilterBtn = document.getElementById('clearFilterBtn');
+        const resultsBox = document.getElementById('resultsBox');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const showAddOnoranzaBtn = document.getElementById('showAddOnoranzaBtn');
+
+        const addRegionBtn = document.getElementById('addRegionBtn');
+        const editRegionBtn = document.getElementById('editRegionBtn');
+        const deleteRegionBtn = document.getElementById('deleteRegionBtn');
+        const addProvinceBtn = document.getElementById('addProvinceBtn');
+        const editProvinceBtn = document.getElementById('editProvinceBtn');
+        const deleteProvinceBtn = document.getElementById('deleteProvinceBtn');
+        const addLocalityBtn = document.getElementById('addLocalityBtn');
+        const editLocalityBtn = document.getElementById('editLocalityBtn');
+        const deleteLocalityBtn = document.getElementById('deleteLocalityBtn');
+
+        // ==================== MODALE ====================
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalBody = document.getElementById('modalBody');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        let modalCallback = null;
+
+        function openModal(htmlContent, onClose = null) {
+            modalBody.innerHTML = htmlContent;
+            modalOverlay.classList.remove('hidden');
+            modalCallback = onClose;
+            const firstInput = modalBody.querySelector('input');
+            if (firstInput) setTimeout(() => firstInput.focus(), 120);
+        }
+        function closeModal() {
+            modalOverlay.classList.add('hidden');
+            modalBody.innerHTML = '';
+            if (modalCallback) { const cb = modalCallback; modalCallback = null; cb(); }
+        }
+        modalCloseBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) closeModal(); });
+
+        modalBody.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+                const confirmBtn = document.getElementById('modalConfirmBtn');
+                if (confirmBtn) {
+                    e.preventDefault(); 
+                    confirmBtn.click(); 
+                }
+            }
+        });
+
+        // ==================== UTILITÀ ====================
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, m => map[m]);
+        }
+        function getCurrentOnoranze() {
+            const reg = regionSelect.value, prov = provinceSelect.value, loc = localitySelect.value;
+            if (!reg || !prov || !loc || !currentData[reg] || !currentData[reg][prov] || !currentData[reg][prov][loc]) return [];
+            return currentData[reg][prov][loc].onoranze || [];
+        }
+        function sortAlphabeticallyBase(keys) {
+            return keys.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        }
+
+        // ==================== POPOLAMENTO SELECT ====================
+        function populateRegions() {
+            regionSelect.innerHTML = '<option value="" disabled selected>— seleziona regione —</option>';
+            const regions = sortAlphabeticallyBase(Object.keys(currentData));
+            regions.forEach(r => {
+                const opt = document.createElement('option'); opt.value = r; opt.textContent = r; regionSelect.appendChild(opt);
+            });
+        }
+
+        function populateProvinces(region) {
+            provinceSelect.innerHTML = '<option value="">— seleziona provincia —</option>';
+            const enable = !!(region && currentData[region]);
+            provinceSelect.disabled = !enable;
+            if (!enable) {
+                localitySelect.innerHTML = '<option value="">— prima scegli provincia —</option>';
+                localitySelect.disabled = true;
+                return;
+            }
+            const provinces = sortAlphabeticallyBase(Object.keys(currentData[region]));
+            provinces.forEach(p => {
+                const opt = document.createElement('option'); opt.value = p; opt.textContent = p; provinceSelect.appendChild(opt);
+            });
+        }
+
+        function populateLocalities(region, province, filterType = '') {
+            localitySelect.innerHTML = '<option value="">— seleziona località —</option>';
+            const enable = !!(region && province && currentData[region] && currentData[region][province]);
+            localitySelect.disabled = !enable;
+            
+            if (!enable) return;
+
+            const locs = currentData[region][province];
+            let filteredKeys = Object.keys(locs).filter(loc => {
+                if (!filterType) return true;
+                const tipo = (locs[loc].type || 'Comune').toLowerCase();
+                return tipo.includes(filterType.toLowerCase());
+            });
+            
+            filteredKeys = sortAlphabeticallyBase(filteredKeys);
+
+            if (filteredKeys.length === 0) {
+                localitySelect.innerHTML = '<option value="" disabled>Nessuna località trovata</option>';
+            } else {
+                filteredKeys.forEach(loc => {
+                    const tipo = locs[loc].type || 'Comune';
+                    const opt = document.createElement('option');
+                    opt.value = loc;
+                    opt.textContent = `${loc} (${tipo})`;
+                    localitySelect.appendChild(opt);
+                });
+            }
+        }
+
+        function renderOnoranze() {
+            resultsBox.innerHTML = '';
+            const onoranze = getCurrentOnoranze();
+            if (!onoranze.length) {
+                if(localitySelect.value) {
+                    resultsBox.innerHTML = '<div class="empty-message">Nessuna onoranza presente in questa località. Aggiungine una!</div>';
+                } else {
+                    resultsBox.innerHTML = '<div class="empty-message">Seleziona una località per visualizzare le onoranze.</div>';
+                }
+                return;
+            }
+            
+            const term = searchInput.value.trim().toLowerCase();
+            const filtered = term ? onoranze.filter(o => o.name.toLowerCase().includes(term)) : onoranze;
+            if (filtered.length === 0) {
+                resultsBox.innerHTML = '<div class="empty-message">Nessun risultato per questa ricerca.</div>';
+                return;
+            }
+            
+            const mapped = filtered.map((o, idx) => ({ data: o, originalIndex: onoranze.indexOf(o) }));
+            mapped.sort((a, b) => a.data.name.localeCompare(b.data.name, undefined, { sensitivity: 'base' }));
+            
+            const activeProv = provinceSelect.value;
+            const locName = localitySelect.value;
+            const locType = currentData[regionSelect.value]?.[activeProv]?.[locName]?.type || '';
+            
+            mapped.forEach(item => {
+                const o = item.data;
+                const originalIndex = item.originalIndex;
+                
+                const div = document.createElement('div');
+                div.className = 'onoranza-card';
+                let detailsHTML = '';
+                
+                if (o.address) {
+                    const mapQuery = encodeURIComponent(`${o.name}, ${o.address}, ${locName}, ${activeProv}`);
+                    detailsHTML += `<span>📍 <a href="https://www.google.com/maps/search/?api=1&query=$${mapQuery}" target="_blank" title="Apri in Google Maps">${escapeHtml(o.address)}</a></span>`;
+                }
+                
+                if (o.phone) detailsHTML += `<span>📞 <a href="tel:${escapeHtml(o.phone)}">${escapeHtml(o.phone)}</a></span>`;
+                
+                if (o.email) {
+                    detailsHTML += `<span>✉️ <a href="mailto:${escapeHtml(o.email)}">${escapeHtml(o.email)}</a>
+                                    <button class="btn-copia copy-data-btn" data-text="${escapeHtml(o.email)}" title="Copia Email">📋</button></span>`;
+                }
+                
+                if (o.link) {
+                    // Controlla che il link inizi con http, altrimenti lo aggiunge
+                    let linkHref = o.link.startsWith('http') ? o.link : 'https://' + o.link;
+                    detailsHTML += `<span>🔗 <a href="${linkHref}" target="_blank">${escapeHtml(o.link)}</a>
+                                    <button class="btn-copia copy-data-btn" data-text="${escapeHtml(o.link)}" title="Copia Link">📋</button></span>`;
+                }
+
+                if (o.note) detailsHTML += `<span>📝 ${escapeHtml(o.note)}</span>`;
+                
+                div.innerHTML = `
+                    <div class="onoranza-info">
+                        <span class="onoranza-name">${escapeHtml(o.name)}</span>
+                        <span class="locality-badge">${escapeHtml(locType)}</span>
+                        ${detailsHTML ? `<div class="onoranza-details">${detailsHTML}</div>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        <button class="edit-onoranza-btn" data-index="${originalIndex}">✏️</button>
+                        <button class="delete-onoranza-btn danger" data-index="${originalIndex}">🗑️</button>
+                    </div>`;
+                resultsBox.appendChild(div);
+            });
+            
+            // Eventi per i pulsanti di modifica e cancellazione
+            resultsBox.querySelectorAll('.edit-onoranza-btn').forEach(b => b.addEventListener('click', (e) => {
+                openOnoranzaModal(parseInt(e.currentTarget.dataset.index, 10));
+            }));
+            resultsBox.querySelectorAll('.delete-onoranza-btn').forEach(b => b.addEventListener('click', (e) => {
+                openDeleteOnoranzaConfirm(parseInt(e.currentTarget.dataset.index, 10));
+            }));
+
+            // Eventi per i pulsanti di COPIA rapida
+            resultsBox.querySelectorAll('.copy-data-btn').forEach(b => b.addEventListener('click', (e) => {
+                const textToCopy = e.currentTarget.dataset.text;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalHTML = e.currentTarget.innerHTML;
+                    e.currentTarget.innerHTML = '✅';
+                    setTimeout(() => e.currentTarget.innerHTML = originalHTML, 1500);
+                }).catch(err => alert("Errore durante la copia negli appunti."));
+            }));
+        }
+
+        function resetFilter() {
+            localityTypeFilter.value = '';
+        }
+
+        // ==================== GESTIONE STATO ====================
+        function updateUI() {
+            const reg = regionSelect.value;
+            const currentProv = provinceSelect.value;
+            const currentLoc = localitySelect.value;
+
+            editRegionBtn.disabled = !reg;
+            deleteRegionBtn.disabled = !reg;
+            addProvinceBtn.disabled = !reg;
+
+            populateProvinces(reg);
+            if (currentProv && currentData[reg]?.[currentProv]) {
+                provinceSelect.value = currentProv;
+            } else {
+                provinceSelect.value = "";
+            }
+            const activeProv = provinceSelect.value;
+
+            editProvinceBtn.disabled = !activeProv;
+            deleteProvinceBtn.disabled = !activeProv;
+            addLocalityBtn.disabled = !activeProv;
+            localityTypeFilter.disabled = !activeProv;
+            clearFilterBtn.disabled = !localityTypeFilter.value;
+
+            populateLocalities(reg, activeProv, localityTypeFilter.value.trim());
+            if (currentLoc && currentData[reg]?.[activeProv]?.[currentLoc]) {
+                localitySelect.value = currentLoc;
+            } else {
+                localitySelect.value = "";
+            }
+            const activeLoc = localitySelect.value;
+
+            editLocalityBtn.disabled = !activeLoc;
+            deleteLocalityBtn.disabled = !activeLoc;
+
+            renderOnoranze();
+            searchInput.disabled = !activeLoc;
+            clearSearchBtn.disabled = !activeLoc;
+            showAddOnoranzaBtn.disabled = !activeLoc;
+        }
+
+        // ==================== MODALI SPECIFICI ====================
+        function openRegionModal(mode, oldName='') {
+            const title = mode==='add'?'Nuova Regione':'Modifica Regione';
+            openModal(`
+                <h3>${title}</h3>
+                <div class="form-row"><label>Nome</label><input type="text" id="modalRegionName" value="${escapeHtml(oldName)}" autocomplete="off"></div>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="primary">${mode==='add'?'Aggiungi':'Salva'}</button>
+                </div>`);
+            setTimeout(() => {
+                const inp = document.getElementById('modalRegionName');
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    const nome = inp.value.trim();
+                    if(!nome) { inp.focus(); inp.style.borderColor='#c44'; return; }
+                    
+                    const existingKey = Object.keys(currentData).find(k => k.toLowerCase() === nome.toLowerCase());
+                    
+                    if(mode==='add') {
+                        if(existingKey) { alert('Regione già esistente!'); return; }
+                        currentData[nome] = {};
+                    } else {
+                        if(existingKey && existingKey !== oldName) { alert('Regione già esistente!'); return; }
+                        if(nome !== oldName) {
+                            currentData[nome] = currentData[oldName];
+                            delete currentData[oldName];
+                        }
+                    }
+                    saveData(); 
+                    populateRegions(); 
+                    regionSelect.value = nome; 
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+        function openDeleteRegionConfirm() {
+            const reg = regionSelect.value; if(!reg) return;
+            openModal(`
+                <h3>Elimina Regione</h3>
+                <p class="warning-text">Eliminare <span class="highlight-name">${escapeHtml(reg)}</span> e tutte le sue province/località?</p>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="danger">Elimina</button>
+                </div>`);
+            setTimeout(() => {
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    delete currentData[reg]; 
+                    saveData();
+                    populateRegions();
+                    regionSelect.value = "";
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+
+        function openProvinceModal(mode, oldName='') {
+            const reg = regionSelect.value; if(!reg) return;
+            const title = mode==='add'?'Nuova Provincia':'Modifica Provincia';
+            openModal(`
+                <h3>${title}</h3>
+                <div class="form-row"><label>Regione</label><input value="${escapeHtml(reg)}" disabled style="background:#f5f5f5;"></div>
+                <div class="form-row"><label>Nome provincia</label><input type="text" id="modalProvinceName" value="${escapeHtml(oldName)}" autocomplete="off"></div>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="primary">${mode==='add'?'Aggiungi':'Salva'}</button>
+                </div>`);
+            setTimeout(() => {
+                const inp = document.getElementById('modalProvinceName');
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    const nome = inp.value.trim();
+                    if(!nome) { inp.focus(); inp.style.borderColor='#c44'; return; }
+                    
+                    const existingKey = Object.keys(currentData[reg]).find(k => k.toLowerCase() === nome.toLowerCase());
+
+                    if(mode==='add') {
+                        if(existingKey) { alert('Provincia già esistente!'); return; }
+                        currentData[reg][nome] = {};
+                    } else {
+                        if(existingKey && existingKey !== oldName) { alert('Provincia già esistente!'); return; }
+                        if(nome !== oldName) {
+                            currentData[reg][nome] = currentData[reg][oldName];
+                            delete currentData[reg][oldName];
+                        }
+                    }
+                    saveData(); 
+                    populateProvinces(reg); 
+                    provinceSelect.value = nome; 
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+        function openDeleteProvinceConfirm() {
+            const reg = regionSelect.value, prov = provinceSelect.value; if(!reg||!prov) return;
+            openModal(`
+                <h3>Elimina Provincia</h3>
+                <p class="warning-text">Eliminare <span class="highlight-name">${escapeHtml(prov)}</span> e tutte le sue località?</p>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="danger">Elimina</button>
+                </div>`);
+            setTimeout(() => {
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    delete currentData[reg][prov]; 
+                    saveData();
+                    provinceSelect.value = ""; 
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+
+        function openLocalityModal(mode, oldName='', oldType='Comune') {
+            const reg = regionSelect.value, prov = provinceSelect.value; if(!reg||!prov) return;
+            const title = mode==='add'?'Nuova Località':'Modifica Località';
+            openModal(`
+                <h3>${title}</h3>
+                <div class="form-row"><label>Provincia</label><input value="${escapeHtml(prov)}" disabled style="background:#f5f5f5;"></div>
+                <div class="form-row"><label>Nome località *</label><input type="text" id="modalLocName" value="${escapeHtml(oldName)}" autocomplete="off"></div>
+                <div class="form-row"><label>Tipo</label><input type="text" id="modalLocType" list="typeSuggestions" value="${escapeHtml(oldType)}" placeholder="Comune, Frazione, Quartiere..."></div>
+                <datalist id="typeSuggestions"><option value="Comune"><option value="Frazione"><option value="Quartiere"><option value="Paese"><option value="Località"><option value="Zona"></datalist>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="primary">${mode==='add'?'Aggiungi':'Salva'}</button>
+                </div>`);
+            setTimeout(() => {
+                const inpName = document.getElementById('modalLocName');
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    const nome = inpName.value.trim();
+                    if(!nome) { inpName.focus(); inpName.style.borderColor='#c44'; return; }
+                    const tipo = document.getElementById('modalLocType').value.trim() || 'Comune';
+                    
+                    const existingKey = Object.keys(currentData[reg][prov]).find(k => k.toLowerCase() === nome.toLowerCase());
+
+                    if(mode==='add') {
+                        if(existingKey) { alert('Località già esistente in questa provincia!'); return; }
+                        currentData[reg][prov][nome] = { type: tipo, onoranze: [] };
+                    } else {
+                        if(existingKey && existingKey !== oldName) { alert('Località già esistente in questa provincia!'); return; }
+                        if(nome !== oldName) {
+                            currentData[reg][prov][nome] = currentData[reg][prov][oldName];
+                            delete currentData[reg][prov][oldName];
+                        }
+                        currentData[reg][prov][nome].type = tipo;
+                    }
+                    saveData(); 
+                    populateLocalities(reg, prov, localityTypeFilter.value.trim());
+                    localitySelect.value = nome; 
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+        function openDeleteLocalityConfirm() {
+            const reg = regionSelect.value, prov = provinceSelect.value, loc = localitySelect.value;
+            if(!reg||!prov||!loc) return;
+            openModal(`
+                <h3>Elimina Località</h3>
+                <p class="warning-text">Eliminare <span class="highlight-name">${escapeHtml(loc)}</span> e tutte le sue onoranze?</p>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="danger">Elimina</button>
+                </div>`);
+            setTimeout(() => {
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    delete currentData[reg][prov][loc]; 
+                    saveData();
+                    localitySelect.value = ""; 
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+
+        function openOnoranzaModal(index=-1) {
+            const reg = regionSelect.value, prov = provinceSelect.value, loc = localitySelect.value;
+            if(!reg||!prov||!loc) return;
+            const onoranze = currentData[reg][prov][loc].onoranze;
+            const isEdit = index >= 0 && onoranze[index];
+            const o = isEdit ? onoranze[index] : { name:'', address:'', phone:'', email:'', link:'', note:'' };
+            openModal(`
+                <h3>${isEdit?'Modifica Onoranza':'Nuova Onoranza'}</h3>
+                <div class="form-row"><label>Nome *</label><input type="text" id="modalOnName" value="${escapeHtml(o.name)}" autocomplete="off"></div>
+                <div class="form-row"><label>Indirizzo</label><input type="text" id="modalOnAddress" value="${escapeHtml(o.address)}"></div>
+                <div class="form-row"><label>Telefono</label><input type="tel" id="modalOnPhone" value="${escapeHtml(o.phone)}"></div>
+                <div class="form-row"><label>Email</label><input type="email" id="modalOnEmail" value="${escapeHtml(o.email)}"></div>
+                <div class="form-row"><label>Sito Web / Link</label><input type="text" id="modalOnLink" placeholder="es. www.agenzia.it" value="${escapeHtml(o.link || '')}"></div>
+                <div class="form-row"><label>Note</label><input type="text" id="modalOnNote" value="${escapeHtml(o.note)}"></div>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="primary">${isEdit?'Aggiorna':'Salva'}</button>
+                </div>`);
+            setTimeout(() => {
+                const nameInp = document.getElementById('modalOnName');
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    const nome = nameInp.value.trim();
+                    if(!nome) { nameInp.focus(); nameInp.style.borderColor='#c44'; return; }
+                    
+                    const existingIndex = onoranze.findIndex(on => on.name.toLowerCase() === nome.toLowerCase());
+                    if (isEdit) {
+                        if (existingIndex !== -1 && existingIndex !== index) { alert('Nome onoranza già presente in questa località!'); return; }
+                    } else {
+                        if (existingIndex !== -1) { alert('Nome onoranza già presente in questa località!'); return; }
+                    }
+
+                    const nuova = {
+                        name: nome,
+                        address: document.getElementById('modalOnAddress').value.trim(),
+                        phone: document.getElementById('modalOnPhone').value.trim(),
+                        email: document.getElementById('modalOnEmail').value.trim(),
+                        link: document.getElementById('modalOnLink').value.trim(),
+                        note: document.getElementById('modalOnNote').value.trim()
+                    };
+                    if(isEdit) onoranze[index] = nuova;
+                    else onoranze.push(nuova);
+                    saveData(); 
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+        function openDeleteOnoranzaConfirm(index) {
+            const onoranze = getCurrentOnoranze();
+            if(!onoranze[index]) return;
+            const o = onoranze[index];
+            openModal(`
+                <h3>Elimina Onoranza</h3>
+                <p class="warning-text">Eliminare <span class="highlight-name">${escapeHtml(o.name)}</span>?</p>
+                <div class="btn-row">
+                    <button id="modalCancelBtn">Annulla</button>
+                    <button id="modalConfirmBtn" class="danger">Elimina</button>
+                </div>`);
+            setTimeout(() => {
+                document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    onoranze.splice(index,1); 
+                    saveData(); 
+                    updateUI(); 
+                    closeModal();
+                });
+            }, 50);
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        addRegionBtn.addEventListener('click', ()=>openRegionModal('add'));
+        editRegionBtn.addEventListener('click', ()=>{ const r=regionSelect.value; if(r) openRegionModal('edit', r); });
+        deleteRegionBtn.addEventListener('click', openDeleteRegionConfirm);
+        
+        addProvinceBtn.addEventListener('click', ()=>openProvinceModal('add'));
+        editProvinceBtn.addEventListener('click', ()=>{ const p=provinceSelect.value; if(p) openProvinceModal('edit', p); });
+        deleteProvinceBtn.addEventListener('click', openDeleteProvinceConfirm);
+        
+        addLocalityBtn.addEventListener('click', ()=>openLocalityModal('add'));
+        editLocalityBtn.addEventListener('click', ()=>{
+            const reg=regionSelect.value, prov=provinceSelect.value, loc=localitySelect.value;
+            if(reg&&prov&&loc) {
+                const tipo = currentData[reg][prov][loc]?.type || 'Comune';
+                openLocalityModal('edit', loc, tipo);
+            }
+        });
+        deleteLocalityBtn.addEventListener('click', openDeleteLocalityConfirm);
+        
+        showAddOnoranzaBtn.addEventListener('click', ()=>openOnoranzaModal(-1));
+
+        regionSelect.addEventListener('change', () => {
+            provinceSelect.value = '';
+            localitySelect.value = '';
+            resetFilter();
+            updateUI();
+        });
+        provinceSelect.addEventListener('change', () => {
+            localitySelect.value = '';
+            resetFilter();
+            updateUI();
+        });
+        localitySelect.addEventListener('change', () => {
+            updateUI();
+        });
+
+        localityTypeFilter.addEventListener('input', () => {
+            updateUI(); 
+        });
+        clearFilterBtn.addEventListener('click', () => {
+            resetFilter();
+            localitySelect.value = '';
+            updateUI();
+        });
+
+        searchInput.addEventListener('input', renderOnoranze);
+        clearSearchBtn.addEventListener('click', ()=>{ searchInput.value=''; renderOnoranze(); });
+
+        // ==================== INIT ====================
+        loadData(() => { populateRegions(); updateUI(); });
+    })();
+</script>
+</body>
+</html>
